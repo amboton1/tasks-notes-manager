@@ -101,7 +101,6 @@ router.post('/users/login', async (req, res) => {
 router.delete('/users/me', auth, async (req, res) => {
     try {
         await req.user.remove()
-        console.log(req.user.email)
         // sendCancelationEmail(req.user.email, req.user.name)
         res.send(req.user)
     } catch (error) {
