@@ -56,7 +56,6 @@ router.post('/users/logoutAll', auth, async (req, res) => {
 
 // UPDATE USER
 router.patch('/users/me', auth, async (req, res) => {
-    // const _id = req.params.id
     const body = req.body
 
     const allowedUserUpdates = ['name', 'age', 'email', 'password']
@@ -69,15 +68,9 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 
     try {
-        // const user = await User.findById(_id)
-
         newUsersProperty.forEach((update) => req.user[update] = req.body[update])
 
         await req.user.save()
-
-        // if (!user) {
-        //     res.status(400).send()
-        // }
 
         res.send(req.user)
 
