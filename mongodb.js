@@ -1,8 +1,5 @@
 // CRUD CREATE READ UPDATE DELETE
 
-// const mongodb = require('mongodb');
-// const MongoClient = mongodb.MongoClient;
-
 const { MongoClient, ObjectID } = require('mongodb')
 
 const connectionURL = 'mongodb://127.0.0.1:27017';
