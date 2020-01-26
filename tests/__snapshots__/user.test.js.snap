@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should not signup with invalid name/email/password 1`] = `"received is not a function"`;

@@ -1,24 +1,9 @@
 const request = require('supertest')
 const app = require('../src/app')
-const jwt = require('jsonwebtoken')
-const mongoose = require('mongoose')
 const User = require('../src/model/users')
+const { userOneId, userOne, setupDatabase } = require('./fixtures/db')
 
-const userOneId = new mongoose.Types.ObjectId()
-const userOne = {
-    _id: userOneId,
-    name: 'Mike',
-    email: 'mike@test.com',
-    password: 'test123456',
-    tokens: [{
-        token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
-    }]
-}
-
-beforeEach(async () => {
-    await User.deleteMany()
-    await new User(userOne).save()
-})
+beforeEach(setupDatabase)
 
 test('Should signup a new user', async () => {
     const response = await request(app).post('/users').send({
@@ -39,6 +24,33 @@ test('Should signup a new user', async () => {
         token: user.tokens[0].token
     })
     expect(user.password).not.toBe('MyPass3367!')
+});
+
+test('Should not signup with invalid name/email/password', async () => {
+    const response = await request(app)
+        .post('/users')
+        .send({
+            name: 'Tester',
+            email: 'botonjic@bota.hr',
+            password: 'password'
+        }).expect(400)
+});
+
+test('Should not update user if unauthenticated', async () => {
+    const response = await request(app)
+        .patch('/users/me')
+        .send({ password: 'newpass231111',  })
+        .expect(401)
+});
+
+test('Should not update user with invalid name/email/password', async () => {
+    const response = await request(app)
+        .patch('/users/me')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({ email: '',  })
+        .expect(500)
+    const user = await User.findById(userOneId)
+    expect(user.email).toBe('mike@test.com')
 });
 
 test('Should login existing user', async () => {
