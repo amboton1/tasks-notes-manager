@@ -22,6 +22,40 @@ test('Should create new task', async () => {
     expect(task.owner).toEqual(userOneId)
 });
 
+test('Should not create new task with invalid description/completed', async () => {
+    const response = await request(app)
+        .post('/tasks')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            completed: 44
+        }).expect(400)
+
+    const task = await Task.findById(response.body._id)
+    expect(task).toBe(null)
+});
+
+test('Should not update task with invalid description/completed', async () => {
+    const response = await request(app)
+        .patch(`/tasks/${taskTwo._id}`)
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({
+            description: [122121, 78787]
+        }).expect(500)
+    
+    const task = await Task.findById(taskTwo._id)
+    expect(task.description).toEqual('Second task')
+});
+
+test('Should delete user task', async () => {
+    const response = await request(app)
+        .delete(`/tasks/${taskTwo._id}`)
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send()
+        .expect(200)
+    const task = await Task.findById(taskTwo._id)
+    expect(task).toBe(null)
+});
+
 test('Should get tasks for the first user', async () => {
     const response = await request(app)
         .get('/tasks')
