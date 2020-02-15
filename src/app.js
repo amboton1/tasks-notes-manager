@@ -1,11 +1,13 @@
 const express = require('express')
-const bcrypt = require('bcryptjs')
 require('./db/mongoose.js')
+const helmet = require('helmet')
 const userRouter = require('./routes/user')
 const taskRouter = require('./routes/task')
 const noteRouter = require('./routes/note')
 
 const app = express()
+
+app.use(helmet())
 
 // KADA BUDEM POKRENUO SERVER U PRODUKCIJU OVO MORAM MAKNUT
 app.use(function(req, res, next) {
